@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DevTab</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <div class="grid">
+        <div class="widget clock-widget">
+          <h1 id="clock-time" class="mono-text display-time">00:00</h1>
+          <p id="clock-date" class="date-text">Loading...</p>
+          <p id="greeting-text" class="greeting-text">Welcome</p>
+        </div>
+
+        <div class="widget timer-widget">
+          <div class="mode-selector">
+            <button id="mode-pomodoro" class="mode-btn active">Pomodoro</button>
+            <button id="mode-stopwatch" class="mode-btn">Stopwatch</button>
+            <button id="mode-timer" class="mode-btn">Timer</button>
+          </div>
+
+          <div class="timer-display-container">
+            <input
+              type="text"
+              id="timer-input"
+              class="mono-text display-time timer-input"
+              value="25:00"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+
+          <div class="controls">
+            <button id="btn-start" class="btn btn-primary">Start</button>
+            <button id="btn-reset" class="btn btn-secondary">Reset</button>
+          </div>
+
+          <div class="progress-track">
+            <div id="timer-progress" class="progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="widget notes-widget group">
+          <div class="widget-header">
+            <span>Brain Dump</span>
+            <button id="clear-notes" class="btn-clear">Clear</button>
+          </div>
+          <textarea id="notes-area" placeholder="Clear your head..."></textarea>
+          <div class="widget-footer text-right">
+            <span id="notes-status" class="status-text">Saved</span>
+          </div>
+        </div>
+
+        <div class="widget quote-widget group">
+          <div class="widget-header">
+            <span>DevTab Quotes</span>
+            <button id="new-quote-btn" class="btn-clear">Next</button>
+          </div>
+          <div class="quote-container">
+            <blockquote id="quote-text" class="quote-text">
+              Loading...
+            </blockquote>
+            <cite id="quote-author" class="quote-author"></cite>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
