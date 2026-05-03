@@ -1,4 +1,24 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // --- Search Engine Integration ---
+  const searchForm = document.getElementById("search-form");
+  const searchInput = document.getElementById("search-input");
+
+  searchForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const query = searchInput.value.trim();
+    if (query) {
+      // Uses your browser's official default search engine
+      if (chrome.search && chrome.search.query) {
+        chrome.search.query({ text: query, disposition: "CURRENT_TAB" });
+      } else {
+        // Fallback (just in case the browser blocks the API)
+        window.location.href = `https://www.google.com/search?q=${encodeURIComponent(
+          query
+        )}`;
+      }
+    }
+  });
+
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
   function playAlarm() {

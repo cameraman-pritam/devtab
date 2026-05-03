@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
   "name": "DevTab",
-  "version": "1.0",
+  "version": "1.2",
   "description": "DevTab custom new tab dashboard.",
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
-  "permissions": ["storage"]
+  "permissions": ["storage", "search"]
 }
