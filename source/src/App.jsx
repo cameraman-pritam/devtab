@@ -1,6 +1,5 @@
 import React, { Suspense } from "react";
 import QuickLinks from "./components/QuickLinks";
-import SearchBar from "./components/SearchBar";
 import SkeletonWidget from "./components/SkeletonWidget";
 
 // Lazy loading all the heavy widgets
@@ -13,7 +12,6 @@ function App() {
   return (
     <main className="container">
       <QuickLinks />
-      <SearchBar />
 
       <div className="grid">
         <Suspense fallback={<SkeletonWidget />}>
