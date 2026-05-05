@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { useState, useEffect, useRef } from "react";
 
 export default function NotesWidget() {
@@ -6,24 +7,40 @@ export default function NotesWidget() {
   const timeoutRef = useRef(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("devtab-notes");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (saved) setNotes(saved);
+    if (window.chrome && chrome.storage) {
+      chrome.storage.local.get(["devtab-notes"], (res) => {
+        if (res["devtab-notes"]) setNotes(res["devtab-notes"]);
+      });
+    } else {
+      const saved = localStorage.getItem("devtab-notes");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (saved) setNotes(saved);
+    }
   }, []);
 
   const handleChange = (e) => {
-    setNotes(e.target.value);
+    const newText = e.target.value;
+    setNotes(newText);
     setStatus("Saving...");
     clearTimeout(timeoutRef.current);
+
     timeoutRef.current = setTimeout(() => {
-      localStorage.setItem("devtab-notes", e.target.value);
+      if (window.chrome && chrome.storage) {
+        chrome.storage.local.set({ "devtab-notes": newText });
+      } else {
+        localStorage.setItem("devtab-notes", newText);
+      }
       setStatus("Saved");
     }, 500);
   };
 
   const clearNotes = () => {
     setNotes("");
-    localStorage.removeItem("devtab-notes");
+    if (window.chrome && chrome.storage) {
+      chrome.storage.local.remove("devtab-notes");
+    } else {
+      localStorage.removeItem("devtab-notes");
+    }
     setStatus("Cleared");
   };
 
@@ -35,7 +52,6 @@ export default function NotesWidget() {
           Clear
         </button>
       </div>
-      {/* The class notes-area has overflow-y: auto */}
       <textarea
         className="notes-area mono-text"
         placeholder="Clear your head..."
