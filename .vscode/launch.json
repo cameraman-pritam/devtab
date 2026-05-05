@@ -7,13 +7,6 @@
       "name": "Bun: Build DevTab",
       "command": "bun run build",
       "cwd": "${workspaceFolder}/source"
-    },
-    {
-      "type": "node-terminal",
-      "request": "launch",
-      "name": "Bun: Dev Server",
-      "command": "bun run dev",
-      "cwd": "${workspaceFolder}/source"
     }
   ]
 }
