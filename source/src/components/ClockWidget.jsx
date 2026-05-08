@@ -26,7 +26,7 @@ export default function ClockWidget() {
         }),
         greeting,
       });
-    }, 1000);
+    }, 50);
     return () => clearInterval(interval);
   }, []);
 

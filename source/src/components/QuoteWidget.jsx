@@ -22,12 +22,6 @@ export default function QuoteWidget() {
 
   return (
     <div className="widget quote-widget">
-      <div className="widget-header">
-        <span>DevTab Quotes</span>
-        <button className="btn-clear" onClick={fetchQuote}>
-          Next
-        </button>
-      </div>
       {/* The class quote-container has overflow-y: auto */}
       <div className="quote-container">
         <blockquote className="quote-text">"{quote.quote}"</blockquote>
