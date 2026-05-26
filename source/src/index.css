@@ -1,20 +1,33 @@
 :root {
-  /* Atom One Dark Darker Theme */
-  --bg-main: #181a1f;
-  --bg-card: #21252b;
-  --bg-darker: #121417;
-  --border-color: #2c313a;
-  --text-main: #d7dae0;
-  --text-muted: #5c6370;
-  --text-dark: #4b5263;
-  --accent-primary: #61afef;
-  --accent-primary-hover: #528bff;
-  --accent-secondary: #2c313a;
-  --accent-secondary-hover: #3e4451;
-  --btn-text-primary: #181a1f;
-  --btn-text-secondary: #abb2bf;
+  color-scheme: light dark;
+
+  /* INHERIT BROWSER & OS THEME DIRECTLY */
+  --bg-main: Canvas;
+  --text-main: CanvasText;
+
+  /* Your exact Qt / Chrome Theme Accent Color */
+  --accent-primary: AccentColor;
+
+  /* Dynamically generate shades by mixing the Browser's Background and Text colors */
+  --bg-card: color-mix(in srgb, Canvas 95%, CanvasText 5%);
+  --bg-darker: color-mix(in srgb, Canvas 90%, CanvasText 10%);
+  --border-color: color-mix(in srgb, Canvas 85%, CanvasText 15%);
+
+  /* Dynamically generate muted text */
+  --text-muted: color-mix(in srgb, CanvasText 70%, Canvas 30%);
+  --text-dark: color-mix(in srgb, CanvasText 45%, Canvas 55%);
+
+  /* Hover states mathematically derived from your system colors */
+  --accent-primary-hover: color-mix(in srgb, AccentColor 85%, CanvasText 15%);
+  --accent-secondary: color-mix(in srgb, Canvas 85%, CanvasText 15%);
+  --accent-secondary-hover: color-mix(in srgb, Canvas 75%, CanvasText 25%);
+
+  /* Button text contrasts against the background */
+  --btn-text-primary: Canvas;
+  --btn-text-secondary: CanvasText;
 }
 
+/* Note: Ensure the @media (prefers-color-scheme: dark) block is COMPLETELY DELETED */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -247,7 +260,9 @@ body,
   font-weight: 700;
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
   font-size: 1rem;
 }
 .btn:active {
