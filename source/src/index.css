@@ -1,30 +1,24 @@
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
 
-  /* INHERIT BROWSER & OS THEME DIRECTLY */
-  --bg-main: Canvas;
-  --text-main: CanvasText;
+  /* ABSOLUTE MONOCHROME / BRUTALIST */
+  --bg-main: #000000;
+  --bg-card: #0a0a0a;
+  --bg-darker: #141414;
+  --border-color: #333333;
 
-  /* Your exact Qt / Chrome Theme Accent Color */
-  --accent-primary: AccentColor;
+  --text-main: #ffffff;
+  --text-muted: #888888;
+  --text-dark: #555555;
 
-  /* Dynamically generate shades by mixing the Browser's Background and Text colors */
-  --bg-card: color-mix(in srgb, Canvas 95%, CanvasText 5%);
-  --bg-darker: color-mix(in srgb, Canvas 90%, CanvasText 10%);
-  --border-color: color-mix(in srgb, Canvas 85%, CanvasText 15%);
+  --accent-primary: #ffffff;
+  --accent-primary-hover: #cccccc;
 
-  /* Dynamically generate muted text */
-  --text-muted: color-mix(in srgb, CanvasText 70%, Canvas 30%);
-  --text-dark: color-mix(in srgb, CanvasText 45%, Canvas 55%);
+  --accent-secondary: #1a1a1a;
+  --accent-secondary-hover: #2a2a2a;
 
-  /* Hover states mathematically derived from your system colors */
-  --accent-primary-hover: color-mix(in srgb, AccentColor 85%, CanvasText 15%);
-  --accent-secondary: color-mix(in srgb, Canvas 85%, CanvasText 15%);
-  --accent-secondary-hover: color-mix(in srgb, Canvas 75%, CanvasText 25%);
-
-  /* Button text contrasts against the background */
-  --btn-text-primary: Canvas;
-  --btn-text-secondary: CanvasText;
+  --btn-text-primary: #000000;
+  --btn-text-secondary: #ffffff;
 }
 
 /* Note: Ensure the @media (prefers-color-scheme: dark) block is COMPLETELY DELETED */

@@ -13,11 +13,11 @@ function playAlarm() {
     gainNode.gain.setValueAtTime(0, audioCtx.currentTime + delay);
     gainNode.gain.linearRampToValueAtTime(
       0.5,
-      audioCtx.currentTime + delay + 0.05
+      audioCtx.currentTime + delay + 0.05,
     );
     gainNode.gain.exponentialRampToValueAtTime(
       0.001,
-      audioCtx.currentTime + delay + 1.5
+      audioCtx.currentTime + delay + 1.5,
     );
     osc.start(audioCtx.currentTime + delay);
     osc.stop(audioCtx.currentTime + delay + 1.5);
@@ -36,55 +36,114 @@ export default function TimerWidget() {
 
   const timerRef = useRef(null);
 
+  // Sync helper: Saves the TARGET time, not just remaining time
+  const syncState = (running, currentMode, rem, tot) => {
+    const target =
+      currentMode === "stopwatch"
+        ? Date.now() - rem * 1000 // target is when it started
+        : Date.now() + rem * 1000; // target is when it ends
+
+    localStorage.setItem(
+      "devtab-timer",
+      JSON.stringify({
+        isRunning: running,
+        mode: currentMode,
+        targetTime: target,
+        savedRemaining: rem,
+        totalTime: tot,
+      }),
+    );
+  };
+
+  // On Mount: Check if a timer was already running in the background
+  useEffect(() => {
+    const stored = localStorage.getItem("devtab-timer");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setMode(parsed.mode);
+      setTotalTime(parsed.totalTime);
+
+      if (parsed.isRunning) {
+        if (parsed.mode === "stopwatch") {
+          setTimeRemaining(Math.floor((Date.now() - parsed.targetTime) / 1000));
+        } else {
+          const left = Math.floor((parsed.targetTime - Date.now()) / 1000);
+          setTimeRemaining(Math.max(0, left));
+          if (left <= 0) syncState(false, parsed.mode, 0, parsed.totalTime);
+        }
+        setIsRunning(
+          parsed.isRunning &&
+            (parsed.mode === "stopwatch" || parsed.targetTime > Date.now()),
+        );
+      } else {
+        setTimeRemaining(parsed.savedRemaining);
+      }
+    }
+  }, []);
+
+  // The Engine: Calculates true time based on the timestamp to prevent drift
   useEffect(() => {
     if (!isEditing) {
       const m = Math.floor(timeRemaining / 60)
         .toString()
         .padStart(2, "0");
       const s = (timeRemaining % 60).toString().padStart(2, "0");
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setInputValue(`${m}:${s}`);
     }
 
     if (isRunning) {
       timerRef.current = setInterval(() => {
-        setTimeRemaining((prev) => {
-          if (mode === "stopwatch") return prev + 1;
-          if (prev > 0) return prev - 1;
+        const stored = JSON.parse(localStorage.getItem("devtab-timer") || "{}");
 
-          setIsRunning(false);
-          clearInterval(timerRef.current);
-          playAlarm();
-          return 0;
-        });
+        if (stored.isRunning) {
+          let newRem = 0;
+          if (stored.mode === "stopwatch") {
+            newRem = Math.floor((Date.now() - stored.targetTime) / 1000);
+          } else {
+            newRem = Math.floor((stored.targetTime - Date.now()) / 1000);
+            if (newRem <= 0) {
+              newRem = 0;
+              setIsRunning(false);
+              playAlarm();
+              syncState(false, stored.mode, 0, stored.totalTime);
+            }
+          }
+          setTimeRemaining(newRem);
+
+          // UPDATE TAB TITLE HERE
+          const m = Math.floor(newRem / 60)
+            .toString()
+            .padStart(2, "0");
+          const s = (newRem % 60).toString().padStart(2, "0");
+          document.title = `DevTab [${m}:${s}]`;
+        }
       }, 1000);
     } else {
       clearInterval(timerRef.current);
+      document.title = "DevTab";
     }
+
     return () => clearInterval(timerRef.current);
-  }, [isRunning, timeRemaining, mode, isEditing]);
+  }, [isRunning, timeRemaining, isEditing]);
 
   const handleModeChange = (newMode) => {
     setIsRunning(false);
     setMode(newMode);
     setIsEditing(false);
-    if (newMode === "pomodoro") {
-      setTotalTime(25 * 60);
-      setTimeRemaining(25 * 60);
-    } else if (newMode === "stopwatch") {
-      setTotalTime(0);
-      setTimeRemaining(0);
-    } else {
-      if (timeRemaining === 0) {
-        setTotalTime(15 * 60);
-        setTimeRemaining(15 * 60);
-      }
-    }
+    let newTotal = 0;
+
+    if (newMode === "pomodoro") newTotal = 25 * 60;
+    else if (newMode === "stopwatch") newTotal = 0;
+    else newTotal = timeRemaining === 0 ? 15 * 60 : timeRemaining;
+
+    setTotalTime(newTotal);
+    setTimeRemaining(newTotal);
+    syncState(false, newMode, newTotal, newTotal);
+    document.title = "DevTab";
   };
 
   const handleBlur = () => {
     setIsEditing(false);
-    // eslint-disable-next-line no-useless-assignment
     let mins = 0,
       secs = 0;
     if (inputValue.includes(":")) {
@@ -97,11 +156,19 @@ export default function TimerWidget() {
     const newTotal = mins * 60 + secs;
     setTimeRemaining(newTotal);
     if (mode !== "stopwatch") setTotalTime(newTotal);
+    syncState(
+      false,
+      mode,
+      newTotal,
+      mode !== "stopwatch" ? newTotal : totalTime,
+    );
   };
 
   const toggleTimer = () => {
     if (audioCtx.state === "suspended") audioCtx.resume();
-    setIsRunning(!isRunning);
+    const newRunning = !isRunning;
+    setIsRunning(newRunning);
+    syncState(newRunning, mode, timeRemaining, totalTime);
   };
 
   const progressWidth =
